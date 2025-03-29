@@ -1,0 +1,66 @@
+// 从data.json加载题目（实际使用时需转为JS变量）
+let questions = []; // 替换为实际的题库数据
+let currentQuestion = 0;
+let score = 0;
+let wrongAnswers = [];
+
+document.getElementById('start-btn').addEventListener('click', startQuiz);
+document.getElementById('next-btn').addEventListener('click', nextQuestion);
+
+// 初始化题库（手动替换为完整数据或动态加载JSON）
+questions = [
+    {
+        question: "创建如图所示三维实体...的体积为？",
+        options: ["A：682730.1", "B：682730.2", "C：682730.3", "D：682730.4"],
+        answer: 0 // 对应选项索引（需根据实际情况调整）
+    },
+    // 其他题目...
+];
+
+function startQuiz() {
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('question-container').classList.remove('hidden');
+    showQuestion();
+}
+
+function showQuestion() {
+    const question = questions[currentQuestion];
+    document.getElementById('question').innerHTML = question.question;
+    const optionsHtml = question.options.map((opt, idx) => 
+        `<li><button onclick="selectAnswer(${idx})">${opt}</button></li>`
+    ).join('');
+    document.getElementById('options').innerHTML = optionsHtml;
+    updateScore();
+}
+
+function selectAnswer(selectedIndex) {
+    const correctIndex = questions[currentQuestion].answer;
+    const options = document.querySelectorAll('#options button');
+    options.forEach(btn => btn.disabled = true);
+    document.getElementById('next-btn').classList.remove('hidden');
+
+    if (selectedIndex === correctIndex) {
+        score++;
+    } else {
+        wrongAnswers.push(questions[currentQuestion]);
+        options[selectedIndex].classList.add('wrong');
+    }
+    options[correctIndex].classList.add('correct');
+    updateScore();
+}
+
+function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+        showQuestion();
+        document.getElementById('next-btn').classList.add('hidden');
+    } else {
+        alert(`测试结束！得分：${score}/${questions.length}`);
+        document.getElementById('review-btn').classList.remove('hidden');
+    }
+}
+
+function updateScore() {
+    document.querySelector('#score span:first-child').textContent = score;
+    document.querySelector('#score span:last-child').textContent = questions.length;
+}
